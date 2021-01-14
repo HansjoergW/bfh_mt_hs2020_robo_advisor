@@ -120,6 +120,7 @@ def process_ticker(data_tuple):
     except Exception as e:
         print(e)
 
+        
 def data_generator():
     add_info = load_additional_info()
     fd_data = load_reports()
