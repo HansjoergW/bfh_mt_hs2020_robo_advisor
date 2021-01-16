@@ -46,8 +46,8 @@ def merge_dataframes(ticker, ticker_fd_data):
     ticker_stock_data = load_stock_history(ticker)
     ticker_stock_data = ticker_stock_data[ticker_stock_data.Date > "2012-01-01"]
     ticker_stock_data['i_date'] = ticker_stock_data.Date
-
     ticker_stock_data.set_index('i_date', inplace=True)
+
     ticker_fd_data['i_date'] = ticker_fd_data.filed
     ticker_fd_data.set_index('i_date', inplace=True)
 
@@ -74,7 +74,8 @@ def create_price_ratio_features(combined_data, shares_outstanding):
     # caping p2e: in order to prevent meaningless values, we need to restrict the range. The max value is limited to 100.
     # if new_df.c_NetIncomeLoss - new_df.c_PaymentsOfDividendsTotal results in a negativ value, we set p2e to 100, which is rather a "bad" value.
     combined_data.loc[(combined_data.pr_p2e < 0) | (combined_data.pr_p2e > 100), 'pr_p2e'] = 100
-    # caping p2egr: the lower the better. generally you would like to see a ratio lower than 1, so a 5 could be a really bad value so we restrict it to 5
+
+    # caping p2egr: the lower the better. generally you would like to see a ratio lower than 1, so a 5 can be considered a really bad value so we restrict it to 5
     # if growth number is 0 or less, we set p2egr to 5
     combined_data.loc[(combined_data.pr_p2egr_1y > 5) | (combined_data.pr_p2egr_1y <= 0.0), 'pr_p2egr_1y'] = 5
 
