@@ -1,3 +1,6 @@
+# takes all the historical stock data from the trainingset folder and calculates and adds the potential to it.
+
+
 import os
 import shutil
 import string
@@ -9,7 +12,8 @@ import pandas as pd
 
 trainingset_folder = "D:/data_mt/09_training/"
 stock_data_folder = trainingset_folder + "stocks/"
-stock_potential_folder = trainingset_folder + "stocks_w_potential/"
+
+stock_potential_folder = "D:/data_mt/09_training_robo/01_stocks_w_potential/"
 
 overwrite = True
 
@@ -33,7 +37,7 @@ def load_stock_history(ticker: str):
     df.sort_index(inplace=True)
     return df
 
-def find_10_day_max(date, close, df):
+def find_10_day_max(date, df):
     date_low = date + pd.DateOffset(days=180)
     date_high =  date + pd.DateOffset(days=360)
 
@@ -43,9 +47,17 @@ def find_10_day_max(date, close, df):
     return 0
 
 
+def find_short_term_mean(date, df):
+    date_low = date + pd.DateOffset(days=60)
+    date_high =  date + pd.DateOffset(days=70)
+    return df[(df.Date >= date_low) & (df.Date <= date_high)].Close.mean()
+
+
 def calculate_potential(stock_data):
-    stock_data['c_max_10day'] = stock_data.apply(lambda row : find_10_day_max(row['Date'], row['Close'], stock_data), axis = 1)
+    stock_data['c_max_10day'] = stock_data.apply(lambda row : find_10_day_max(row['Date'], stock_data), axis = 1)
+    stock_data['c_short_term_mean'] = stock_data.apply(lambda row: find_short_term_mean(row['Date'], stock_data), axis = 1)
     stock_data['r_potential'] = (stock_data.c_max_10day / stock_data.Close) - 1
+    stock_data['r_short_term_potential'] = (stock_data.c_short_term_mean / stock_data.Close) - 1
 
 
 def process_ticker(ticker):
